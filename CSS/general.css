@@ -30,6 +30,8 @@ a{
     justify-content: space-between;
     align-items: center;
     overflow: hidden;
+    text-shadow: 2px 2px 0px rgb(72, 193, 195),
+                 5px 4px 0px rgba(0, 0, 0, 0.15);
 }
 .title h1{
     display: inline-block;
