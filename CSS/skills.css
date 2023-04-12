@@ -21,7 +21,7 @@
     grid-area: interest;
     width: 75%;
     min-height: 17vh;
-    padding: 20px;
+    padding: 10px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -37,7 +37,7 @@
     margin: 0;
 }
 .interest h3{
-    font-size: 3rem;
+    font-size: 2rem;
 }
 .skillIteams{
     grid-area: iteams;
