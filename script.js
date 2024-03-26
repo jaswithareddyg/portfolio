@@ -9,19 +9,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
   console.log("Generating circles...");
 
+  var circles = []; // Array to store circle positions
+
+  // Function to check if the new circle overlaps with existing circles
+  function isOverlapping(x, y, size) {
+    for (var i = 0; i < circles.length; i++) {
+      var circle = circles[i];
+      var distance = Math.sqrt(Math.pow(x - circle.x, 2) + Math.pow(y - circle.y, 2));
+      if (distance < (size + circle.size + 20)) { // 20 pixels added for minimum separation
+        return true; // Overlapping
+      }
+    }
+    return false; // Not overlapping
+  }
+
   // Function to generate a single circle
   function generateCircle() {
+    var size = Math.floor(Math.random() * 60) + 100; // Random size between 100 and 160 pixels
+    var posX, posY;
+
+    // Generate position until it meets the minimum separation requirement
+    do {
+      posX = Math.random() * (circlesContainer.offsetWidth - size);
+      posY = Math.random() * (circlesContainer.offsetHeight - size);
+    } while (isOverlapping(posX, posY, size));
+
+    // Store the position of the new circle
+    circles.push({ x: posX, y: posY, size: size });
+
     // Create li element (circle)
     var circle = document.createElement('li');
     circle.classList.add('circle');
-
-    // Set random size
-    var size = Math.floor(Math.random() * 60) + 40; // Random size between 40 and 100 pixels
-    
-    // Set random position within the container bounds
-    var containerRect = circlesContainer.getBoundingClientRect();
-    var posX = Math.random() * (containerRect.width - size);
-    var posY = Math.random() * (containerRect.height - size);
 
     // Apply styles
     circle.style.width = size + 'px';
@@ -37,33 +55,4 @@ document.addEventListener('DOMContentLoaded', function () {
   for (var i = 0; i < 5; i++) {
     generateCircle();
   }
-
-  // Function to move circles with parallax effect
-  function moveCircles(event) {
-    var mouseX = event.clientX;
-    var mouseY = event.clientY;
-
-    var containerRect = circlesContainer.getBoundingClientRect();
-
-    var centerX = containerRect.left + containerRect.width / 2;
-    var centerY = containerRect.top + containerRect.height / 2;
-
-    var circles = circlesContainer.querySelectorAll('.circle');
-    circles.forEach(function(circle, index) {
-      // Calculate parallax effect based on mouse position
-      var parallaxAmount = index + 1;
-      var offsetX = (mouseX - centerX) * parallaxAmount / 100;
-      var offsetY = (mouseY - centerY) * parallaxAmount / 100;
-
-      // Ensure the circle stays within the bounds of the container
-      var posX = Math.max(0, Math.min(containerRect.width - parseFloat(circle.style.width), centerX + offsetX - parseFloat(circle.style.width) / 2));
-      var posY = Math.max(0, Math.min(containerRect.height - parseFloat(circle.style.height), centerY + offsetY - parseFloat(circle.style.height) / 2));
-
-      // Apply parallax effect to circle position
-      circle.style.transform = `translate(${posX}px, ${posY}px)`;
-    });
-  }
-
-  // Listen for mousemove event to apply parallax effect
-  document.addEventListener('mousemove', moveCircles);
 });

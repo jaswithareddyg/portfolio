@@ -80,18 +80,19 @@ section {
   );
   border-radius: 50%;
   opacity: 0; 
-  animation: animate 15s linear infinite;
+  animation: animate 20s infinite;
 }
 
 /* Adjusted animation keyframes to keep circles within bounds */
 @keyframes animate {
   0% {
-    transform: translate(0, 0); /* Change translateY to translate */
-    opacity: 1;
+    transform: translate(0, 0); /* Starting position */
+    opacity: 1; /* Fully visible */
   }
 
+
   100% {
-    transform: translate(-100%, 0); /* Change translateY to translate */
-    opacity: 0;
+    transform: translate(0, 0); /* Return to the original position */
+    opacity: 1; /* Fade out */
   }
 }
