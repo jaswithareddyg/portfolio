@@ -1,165 +1,93 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Get the container for shapes
-  var shapesContainer = document.querySelector(".shapes");
+const canvas = document.querySelector("canvas");
+const ctx = canvas.getContext("2d");
 
-  if (!shapesContainer) {
-    console.error("Container for shapes not found!");
-    return;
-  }
+// for intro motion
+let mouseMoved = false;
 
-  console.log("Generating shapes...");
+const pointer = {
+  x: 0.5 * window.innerWidth,
+  y: 0.5 * window.innerHeight,
+};
+const params = {
+  pointsNumber: 40,
+  widthFactor: 0.3,
+  mouseThreshold: 0.6,
+  spring: 0.4,
+  friction: 0.5,
+};
 
-  var shapes = [];
+const trail = new Array(params.pointsNumber);
+for (let i = 0; i < params.pointsNumber; i++) {
+  trail[i] = {
+    x: pointer.x,
+    y: pointer.y,
+    dx: 0,
+    dy: 0,
+  };
+}
 
-  // Function to generate a single shape
-  function generateShape(type) {
-    var shape;
-    var posX, posY;
-
-    switch (type) {
-      case "circle":
-        var size = Math.floor(Math.random() * 60) + 100;
-        do {
-          posX = Math.random() * (shapesContainer.offsetWidth - size);
-          posY = Math.random() * (shapesContainer.offsetHeight - size);
-        } while (isOverlapping(posX, posY, size));
-
-        shapes.push({ type: "circle", x: posX, y: posY, size: size });
-
-        shape = document.createElement("li");
-        shape.classList.add("circle");
-        shape.style.width = size + "px";
-        shape.style.height = size + "px";
-        shape.style.left = posX + "px";
-        shape.style.top = posY + "px";
-        break;
-
-      case "pentagon":
-        // Generate pentagon position
-        posX = Math.random() * (shapesContainer.offsetWidth - 54);
-        posY = Math.random() * (shapesContainer.offsetHeight - 50);
-
-        shapes.push({ type: "pentagon", x: posX, y: posY });
-
-        shape = document.createElement("div");
-        shape.classList.add("pentagon");
-        shape.style.left = posX + "px";
-        shape.style.top = posY + "px";
-        break;
-
-      case "heart":
-        // Generate heart position
-        posX = Math.random() * (shapesContainer.offsetWidth - 100);
-        posY = Math.random() * (shapesContainer.offsetHeight - 90);
-
-        shapes.push({ type: "heart", x: posX, y: posY });
-
-        shape = document.createElement("div");
-        shape.classList.add("heart");
-        shape.style.left = posX + "px";
-        shape.style.top = posY + "px";
-        break;
-
-      case "pacman":
-        // Generate pacman position
-        posX = Math.random() * (shapesContainer.offsetWidth - 60);
-        posY = Math.random() * (shapesContainer.offsetHeight - 60);
-
-        shapes.push({ type: "pacman", x: posX, y: posY });
-
-        shape = document.createElement("div");
-        shape.classList.add("pacman");
-        shape.style.left = posX + "px";
-        shape.style.top = posY + "px";
-        break;
-
-      case "space-invader":
-        // Generate space invader position
-        posX = Math.random() * (shapesContainer.offsetWidth - 200);
-        posY = Math.random() * (shapesContainer.offsetHeight - 200);
-
-        shapes.push({ type: "space-invader", x: posX, y: posY });
-
-        shape = document.createElement("div");
-        shape.classList.add("space-invader");
-        shape.style.left = posX + "px";
-        shape.style.top = posY + "px";
-        break;
-
-      case "hexagon":
-        // Generate hexagon position
-        posX = Math.random() * (shapesContainer.offsetWidth - 100);
-        posY = Math.random() * (shapesContainer.offsetHeight - 57.735);
-
-        shapes.push({ type: "hexagon", x: posX, y: posY });
-
-        shape = document.createElement("div");
-        shape.classList.add("hexagon");
-        shape.style.left = posX + "px";
-        shape.style.top = posY + "px";
-        break;
-
-      default:
-        break;
-    }
-
-    if (shape) {
-      shapesContainer.appendChild(shape);
-    }
-  }
-
-  // Generate 5 shapes randomly selected between circle, pentagon, heart, pacman, space invader, hexagon
-  var availableShapes = [
-    "circle",
-    "pentagon",
-    "heart",
-    "pacman",
-    "space-invader",
-    "hexagon",
-  ];
-  for (var i = 0; i < 5; i++) {
-    var randomIndex = Math.floor(Math.random() * availableShapes.length);
-    generateShape(availableShapes[randomIndex]);
-    availableShapes.splice(randomIndex, 1);
-  }
-
-  // Function to check if the new shape overlaps with existing shapes
-  function isOverlapping(x, y, size) {
-    for (var i = 0; i < shapes.length; i++) {
-      var shape = shapes[i];
-      var distance;
-
-      // Calculate distance based on shape type
-      switch (shape.type) {
-        case "circle":
-          distance = Math.sqrt(
-            Math.pow(x - shape.x, 2) + Math.pow(y - shape.y, 2)
-          );
-          if (distance < size + shape.size + 20) {
-            return true; // Overlapping
-          }
-          break;
-
-        case "pentagon":
-        case "heart":
-        case "pacman":
-        case "space-invader":
-        case "hexagon":
-          // For non-circle shapes, check if the bounding boxes overlap
-          if (
-            x < shape.x + shape.offsetWidth + 20 &&
-            x + size + 20 > shape.x &&
-            y < shape.y + shape.offsetHeight + 20 &&
-            y + size + 20 > shape.y
-          ) {
-            return true; // Overlapping
-          }
-          break;
-
-        default:
-          break;
-      }
-    }
-    return false; // Not overlapping
-  }
+window.addEventListener("click", (e) => {
+  updateMousePosition(e.pageX, e.pageY);
 });
+window.addEventListener("mousemove", (e) => {
+  mouseMoved = true;
+  updateMousePosition(e.pageX, e.pageY);
+});
+window.addEventListener("touchmove", (e) => {
+  mouseMoved = true;
+  updateMousePosition(e.targetTouches[0].pageX, e.targetTouches[0].pageY);
+});
+
+function updateMousePosition(eX, eY) {
+  pointer.x = eX;
+  pointer.y = eY;
+}
+
+setupCanvas();
+update(0);
+window.addEventListener("resize", setupCanvas);
+
+function update(t) {
+  // for intro motion
+  if (!mouseMoved) {
+    pointer.x =
+      (0.5 + 0.3 * Math.cos(0.002 * t) * Math.sin(0.005 * t)) *
+      window.innerWidth;
+    pointer.y =
+      (0.5 + 0.2 * Math.cos(0.005 * t) + 0.1 * Math.cos(0.01 * t)) *
+      window.innerHeight;
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  trail.forEach((p, pIdx) => {
+    const prev = pIdx === 0 ? pointer : trail[pIdx - 1];
+    const spring = pIdx === 0 ? 0.4 * params.spring : params.spring;
+    p.dx += (prev.x - p.x) * spring;
+    p.dy += (prev.y - p.y) * spring;
+    p.dx *= params.friction;
+    p.dy *= params.friction;
+    p.x += p.dx;
+    p.y += p.dy;
+  });
+
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(trail[0].x, trail[0].y);
+
+  for (let i = 1; i < trail.length - 1; i++) {
+    const xc = 0.5 * (trail[i].x + trail[i + 1].x);
+    const yc = 0.5 * (trail[i].y + trail[i + 1].y);
+    ctx.quadraticCurveTo(trail[i].x, trail[i].y, xc, yc);
+    ctx.lineWidth = params.widthFactor * (params.pointsNumber - i);
+    ctx.stroke();
+  }
+  ctx.lineTo(trail[trail.length - 1].x, trail[trail.length - 1].y);
+  ctx.stroke();
+
+  window.requestAnimationFrame(update);
+}
+
+function setupCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
