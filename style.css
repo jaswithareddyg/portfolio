@@ -79,20 +79,19 @@ section {
     #2b86c5 100%
   );
   border-radius: 50%;
-  animation: animate 5s ease-in-out;
-  animation-fill-mode: forwards;
+  opacity: 0; 
+  animation: animate 15s linear infinite;
 }
 
+/* Adjusted animation keyframes to keep circles within bounds */
 @keyframes animate {
   0% {
-    transform: translateY(0) rotate(0deg);
+    transform: translate(0, 0); /* Change translateY to translate */
     opacity: 1;
-    border-radius: 0;
   }
 
   100% {
-    transform: translateY(-1000px) rotate(720deg);
+    transform: translate(-100%, 0); /* Change translateY to translate */
     opacity: 0;
-    border-radius: 50%;
   }
 }
