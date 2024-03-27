@@ -75,11 +75,22 @@ function updateMousePosition(x, y) {
 function update(t) {
   // For intro motion - draw a heart shape
   if (!mouseMoved) {
-    const heartSize = 10; // Size of the heart
-    const heartX = 0.5 * window.innerWidth + heartSize * (16 * Math.pow(Math.sin(t * 0.002), 3));
-    const heartY = 0.5 * window.innerHeight - heartSize * (13 * Math.cos(t * 0.002) - 5 * Math.cos(2 * t * 0.002) - 2 * Math.cos(3 * t * 0.002) - Math.cos(4 * t * 0.002));
-    pointer.x = heartX;
-    pointer.y = heartY;
+    // Motion 1: Lissajous curve
+    const amplitudeX = 200; // Amplitude along the x-axis
+    const amplitudeY = 200; // Amplitude along the y-axis
+    const frequencyX = 2; // Frequency along the x-axis
+    const frequencyY = 3; // Frequency along the y-axis
+    const phaseX = Math.PI / 2; // Phase shift along the x-axis
+    const phaseY = Math.PI / 4; // Phase shift along the y-axis
+
+    // Calculate x and y coordinates using parametric equations
+    const tScaled = t * 0.002; // Adjust the multiplier to control the speed of the animation
+    pointer.x =
+      0.5 * window.innerWidth +
+      amplitudeX * Math.sin(frequencyX * tScaled + phaseX);
+    pointer.y =
+      0.5 * window.innerHeight +
+      amplitudeY * Math.sin(frequencyY * tScaled + phaseY);
   }
 
   // Clear canvas
@@ -98,9 +109,14 @@ function update(t) {
   });
 
   // Create gradient
-  const gradient = ctx.createLinearGradient(trail[0].x, trail[0].y, trail[trail.length - 1].x, trail[trail.length - 1].y);
-  gradient.addColorStop(0, 'red'); // Start color
-  gradient.addColorStop(1, 'blue'); // End color
+  const gradient = ctx.createLinearGradient(
+    trail[0].x,
+    trail[0].y,
+    trail[trail.length - 1].x,
+    trail[trail.length - 1].y
+  );
+  gradient.addColorStop(0, "red"); // Start color
+  gradient.addColorStop(1, "blue"); // End color
 
   // Render the trail
   ctx.lineCap = "round";
