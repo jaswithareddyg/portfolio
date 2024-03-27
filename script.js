@@ -97,8 +97,14 @@ function update(t) {
     p.y += p.dy;
   });
 
+  // Create gradient
+  const gradient = ctx.createLinearGradient(trail[0].x, trail[0].y, trail[trail.length - 1].x, trail[trail.length - 1].y);
+  gradient.addColorStop(0, 'red'); // Start color
+  gradient.addColorStop(1, 'blue'); // End color
+
   // Render the trail
   ctx.lineCap = "round";
+  ctx.strokeStyle = gradient;
   ctx.beginPath();
   ctx.moveTo(trail[0].x, trail[0].y);
 
