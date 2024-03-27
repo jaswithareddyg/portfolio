@@ -53,14 +53,13 @@ function updateMousePosition(x, y) {
 
 // Function to update the animation
 function update(t) {
-  // For intro motion
+  // For intro motion - draw a heart shape
   if (!mouseMoved) {
-    pointer.x =
-      (0.5 + 0.3 * Math.cos(0.002 * t) * Math.sin(0.005 * t)) *
-      window.innerWidth;
-    pointer.y =
-      (0.5 + 0.2 * Math.cos(0.005 * t) + 0.1 * Math.cos(0.01 * t)) *
-      window.innerHeight;
+    const heartSize = 10; // Size of the heart
+    const heartX = 0.5 * window.innerWidth + heartSize * (16 * Math.pow(Math.sin(t * 0.002), 3));
+    const heartY = 0.5 * window.innerHeight - heartSize * (13 * Math.cos(t * 0.002) - 5 * Math.cos(2 * t * 0.002) - 2 * Math.cos(3 * t * 0.002) - Math.cos(4 * t * 0.002));
+    pointer.x = heartX;
+    pointer.y = heartY;
   }
 
   // Clear canvas
