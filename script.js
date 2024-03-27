@@ -22,6 +22,9 @@ const trail = Array.from({ length: motionParams.pointsNumber }, () => ({
   dy: 0,
 }));
 
+// Variable to store the timeout ID
+let timeoutId;
+
 // Event listeners for mouse and touch events
 window.addEventListener("mousemove", handleMouseMove);
 window.addEventListener("touchmove", handleTouchMove);
@@ -32,17 +35,34 @@ window.addEventListener("resize", setupCanvas);
 function handleMouseMove(e) {
   mouseMoved = true;
   updateMousePosition(e.pageX, e.pageY);
+
+  // Reset the timeout
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(startIntroMotion, 5000); // Start intro motion after 5 seconds of inactivity
 }
 
 // Function to handle touch movement
 function handleTouchMove(e) {
   mouseMoved = true;
   updateMousePosition(e.targetTouches[0].pageX, e.targetTouches[0].pageY);
+
+  // Reset the timeout
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(startIntroMotion, 5000); // Start intro motion after 5 seconds of inactivity
 }
 
 // Function to handle mouse click
 function handleMouseClick(e) {
   updateMousePosition(e.pageX, e.pageY);
+
+  // Reset the timeout
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(startIntroMotion, 5000); // Start intro motion after 5 seconds of inactivity
+}
+
+// Function to start the intro motion
+function startIntroMotion() {
+  mouseMoved = false; // Reset mouseMoved flag
 }
 
 // Function to update the mouse position
